@@ -16,7 +16,6 @@ ansible_python_interpreter=/usr/bin/python3.9
 [win_server]
 pcwin03 ansible_host=10.8.8.26 testDagoVar=1989 testVar=88
 
-
 [win_server:vars]
 ansible_user=dago
 ansible_password=1234QWer
