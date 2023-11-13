@@ -6,26 +6,27 @@
    gather_facts: false
 
    tasks:
+   - debug: msg="HOLA MUNDO!... {{printer_var}}"
 #   - name: test connection
 #     win_ping:
 
     ## PATH Conditionals
-   - name: fetch file as a source
-     fetch:
-       src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
-       dest: './'
-       flat: yes
-     when: {{printer_var}} == 1
+   # - name: fetch file as a source
+   #   fetch:
+   #     src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
+   #     dest: './'
+   #     flat: yes
+   #   when: {{printer_var}} == 1
 
 
-   - name: fetch file as a source 2
-     fetch:
-       src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
-       dest: './'
-       flat: yes
-     when: 
-       - ACTION == "Install"
-       - {{printer_var}} == 2
+   # - name: fetch file as a source 2
+   #   fetch:
+   #     src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
+   #     dest: './'
+   #     flat: yes
+   #   when: 
+   #     - ACTION == "Install"
+   #     - {{printer_var}} == 2
 
 
    - debug: msg="HOLA MUNDO!... {{printer_var}}"
@@ -34,6 +35,6 @@
      #   - {{printer_var}} == 2
     ## PATH Conditionals
 
-  - name: What is my inventory_hostname
-    debug:
-      msg: 'HOLA desde segundo archivo yaml'
+   - name: What is my inventory_hostname
+     debug:
+       msg: 'HOLA desde segundo archivo yaml'
