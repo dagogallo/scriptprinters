@@ -28,10 +28,10 @@
        - {{printer_var}} == 2
 
 
-   - debug: msg="HOLA MUNDO!"
-     when: 
-       - ACTION == "Tsource"
-       - {{printer_var}} == 2
+   - debug: msg="HOLA MUNDO!... {{printer_var}}"
+     # when: 
+     #   - ACTION == "Tsource"
+     #   - {{printer_var}} == 2
     ## PATH Conditionals
 
   - name: What is my inventory_hostname
