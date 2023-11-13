@@ -9,27 +9,56 @@
        rm /home/dago/ansible/SublimeSetup.exe
      when: ACTION == "Delete"
 
-
-
-######################################################################################################
- - name: Test all hosts
-   hosts: windows
+################### Copy Driver from Storage ##########################################
+ - name: win_ping module demo w01
+   hosts: windows01
    become: false
    gather_facts: false
 
    tasks:
-  - include_tasks:  copy_from_storage.yml
-    vars:
-      printer_var: "{{ outer_printer }}"
-    with_items: "{{Printer}}"
-    loop_control:
-      loop_var: outer_printer
-    when: ACTION == "Install"
+#   - name: test connection
+#     win_ping:
+
+    ## PATH Conditionals
+   - name: fetch file as a source
+     fetch:
+       src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
+       dest: './'
+       flat: yes
+     when: ACTION == "Install" and Printer == 1
+
+
+   - name: fetch file as a source 2
+     fetch:
+       src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
+       dest: './'
+       flat: yes
+     when: 
+       - ACTION == "Install"
+       - Printer == 2
+
+
+   - debug: msg="HOLA MUNDO!"
+     when: 
+       - ACTION == "Tsource"
+       - Printer == 2
+    ## PATH Conditionals
+
+#   - name: What is my inventory_hostname
+#     debug:
+#       msg: 'Hola mundo'
+#     when: ACTION == "Hello" and GREEATING == "Liberia"
 
 
 
 ################ Copy Specific Driver to end users, then install it ###################
 
+ - name: win_ping module demo win02
+   hosts: windows02
+   become: false
+   gather_facts: false
+
+   tasks:
    - name: copy file to dest
      win_copy:
        src: SublimeSetup.exe
@@ -71,11 +100,13 @@
      when: ACTION == "Install"
 
 
+######################################################################################################
+ - name: Test all hosts
+   hosts: windows
+   become: false
+   gather_facts: false
 
-
-
-
-
+   tasks:
    - name: Remove folders
      win_file:
        path: C:\\Temp\\Installer
