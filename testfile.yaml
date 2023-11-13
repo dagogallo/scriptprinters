@@ -18,13 +18,13 @@
    gather_facts: false
 
    tasks:
-  - include_tasks:  copy_from_storage.yml
-    vars:
-      printer_var: "{{ outer_printer }}"
-    with_items: "{{Printer}}"
-    loop_control:
-      loop_var: outer_printer
-    when: ACTION == "Install"
+   - include_tasks: copy_from_storage.yml
+     vars:
+       printer_var: "{{ outer_printer }}"
+     with_items: "{{Printer}}"
+     loop_control:
+       loop_var: outer_printer
+     when: ACTION == "Install"
 
 
 
