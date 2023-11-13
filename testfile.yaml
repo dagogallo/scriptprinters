@@ -18,8 +18,7 @@
    gather_facts: false
 
    tasks:
-   - include_tasks: 
-       file: copy_from_storage.yml
+   - include_tasks: copy_from_storage.yaml
      vars:
        printer_var: "{{ outer_printer }}"
      with_items: "{{Printer}}"
