@@ -1,16 +1,4 @@
 ---
- - name: win_ping module demo w01
-   hosts: 127.0.0.1
-   connection: local
-
-   tasks:
-   - name: Clean up
-     shell: |
-       rm /home/dago/ansible/SublimeSetup.exe
-     when: ACTION == "Delete"
-
-
-
 ######################################################################################################
  - name: Test all hosts
    hosts: windows
@@ -20,10 +8,7 @@
    tasks:
    - include_tasks: copy_from_storage.yaml
      vars:
-       printer_var: "{{ outer_printer }}"
-     with_items: "{{Printer}}"
-     loop_control:
-       loop_var: outer_printer
+       printer_var: "{{ Printer }}"
      when: ACTION == "Install"
 
 
