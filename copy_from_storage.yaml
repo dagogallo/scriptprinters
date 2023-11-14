@@ -1,13 +1,13 @@
 ---
- - name: win_ping module demo w01
-   hosts: win_server
-   become: false
-   gather_facts: false
+  - name: win_ping module demo w01
+    hosts: win_server
+    become: false
+    gather_facts: false
 
-   tasks:
-    # - debug: msg="HOLA MUNDO!... {{printer_var}}"
+    tasks:
+      # - debug: msg="HOLA MUNDO!... {{printer_var}}"
     - name: Prueba extraccion DATOS
       debug:
-        var: {{printer_var}}
+        var: "hola"
 
 

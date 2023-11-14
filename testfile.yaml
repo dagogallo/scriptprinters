@@ -1,23 +1,45 @@
 ---
-######################################################################################################
- - name: Test all hosts
-   hosts: windows
+################### Copy Driver from Storage ##########################################
+ - name: win_ping module demo w01
+   hosts: win_server
    become: false
    gather_facts: false
 
    tasks:
-   - include_tasks: copy_from_storage.yaml
-     vars:
-       printer_var: "{{ Printer }}"
+   - debug: msg="HOLA MUNDO!... {{ hostvars[groups['windows'][my_idx]].Printer }}"
+     loop: "{{ groups['windows'] }}"
+     loop_control:
+       index_var: my_idx
+
+    ## PATH Conditionals
+   - name: fetch file as a source
+     fetch:
+       src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
+       dest: './SublimeSetup1.exe'
+       flat: yes
      when: ACTION == "Install"
 
+
+   - name: fetch file as a source 2
+     fetch:
+       src: C:\\Users\\dago\\Desktop\\SublimeSetup.exe
+       dest: './SublimeSetup2.exe'
+       flat: yes
+     when: 
+       - ACTION == "Install"
 
 
 ################ Copy Specific Driver to end users, then install it ###################
 
+ - name: win_ping module demo win02
+   hosts: windows02
+   become: false
+   gather_facts: false
+
+   tasks:
    - name: copy file to dest
      win_copy:
-       src: SublimeSetup.exe
+       src: SublimeSetup2.exe
        dest: C:\\Temp\\Installer\\
      when: ACTION == "Install"
 
@@ -27,240 +49,3 @@
        path: C:\\Temp\\Installer
        state: absent
      when: ACTION == "Delete"
-
-
-
-   - name: Check Old Installed Driver
-     win_shell: Get-WmiObject Win32_Product | Where-Object {$_.Name -like "Lexmark Universal v2 XL Print Driver*" -and $_.version -like "3.0.2.9"} | select-object name,version
-     when: ACTION == "Check"
-     register: old_driver_checking
-
-   # - debug: msg="SI encontro algo"
-   #   when: old_driver_checking.stdout != ""
-
-   # - debug: msg="NO encontro algo"
-   #   when: old_driver_checking.stdout == ""
-
-   # - debug: msg="{{old_driver_checking.stdout}}"
-   #   when: ACTION == "Check"
-
-   - name: Uninstall Old Driver
-     win_shell: Get-Package "Lexmark Universal v2 XL Print Driver" | Uninstall-Package -force
-     when: old_driver_checking.stdout != "" and ACTION == "Check"
-     ignore_errors: true
-
-
-
-   - name: Install Driver
-     win_shell: Start-Process -PassThru C:\Temp\Installer\SublimeSetup.exe /VERYSILENT | Wait-Process
-     when: ACTION == "Install"
-
-
-
-
-
-
-
-   - name: Remove folders
-     win_file:
-       path: C:\\Temp\\Installer
-       state: absent
-     when: ACTION == "Test"
-
-   - name: test connection
-     win_ping:
-     when: ACTION == "Test"
-
-   - name: Obtain information about a registry key using short form
-     win_reg_stat:
-       path: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion
-     register: current_version
-     when: ACTION == "Test"
-
-   - name: Printing Something
-     debug:
-       msg: "{{ current_version.properties.CommonW6432Dir.type }}"
-     when: ACTION == "Test"
-
-     ### Add
-    #1
-   - name: Add SNMP Community Lexmark_Port
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port
-       name: SNMP Community
-       type: string
-       data: LexmarkCRI
-     when: ACTION == "Test"
-
-   - name: Add Hostname IP Lexmark_Port
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port
-       name: Hostname
-       type: string
-       data: '{{ IP1 }}'
-     when: ACTION == "Test"
-
-     #2
-   - name: Add SNMP Community Lexmark_Port_Color
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_Color
-       name: SNMP Community
-       type: string
-       data: LexmarkCRI
-     when: ACTION == "Test"
-
-   - name: Add Hostname IP Lexmark_Port_Color
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_Color
-       name: Hostname
-       type: string
-       data: '{{ IP2 }}'
-     when: ACTION == "Test"
-
-     #3
-   - name: Add SNMP Community Lexmark_Port_3
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_3
-       name: SNMP Community
-       type: string
-       data: LexmarkCRI
-     when: ACTION == "Test"
-
-   - name: Add Hostname IP Lexmark_Port_3
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_3
-       name: Hostname
-       type: string
-       data: '{{ IP3 }}'
-     when: ACTION == "Test"
-
-     #4
-   - name: Add SNMP Community Lexmark_Port_4
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_4
-       name: SNMP Community
-       type: string
-       data: LexmarkCRI
-     when: ACTION == "Test"
-
-   - name: Add Hostname IP Lexmark_Port_4
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_4
-       name: Hostname
-       type: string
-       data: '{{ IP4 }}'
-     when: ACTION == "Test"
-
-     #5
-   - name: Add SNMP Community Lexmark_Port_5
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_5
-       name: SNMP Community
-       type: string
-       data: LexmarkCRI
-     when: ACTION == "Test"
-
-   - name: Add Hostname IP Lexmark_Port_5
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_5
-       name: Hostname
-       type: string
-       data: '{{ IP4 }}'
-     when: ACTION == "Test"
-
-
-     ### Remove #########################################
-
-     #1
-   - name: Remove registry SNMP Community Lexmark_Port
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port
-       name: SNMP Community
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-   - name: Remove registry Hostname IP Lexmark_Port
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port
-       name: Hostname
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-
-     #2
-   - name: Remove registry SNMP Community Lexmark_Port_Color
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_Color
-       name: SNMP Community
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-   - name: Remove registry Hostname IP Lexmark_Port_Color
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_Color
-       name: Hostname
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-     #3
-   - name: Remove registry SNMP Community Lexmark_Port_3
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_3
-       name: SNMP Community
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-   - name: Remove registry Hostname IP Lexmark_Port_3
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_3
-       name: Hostname
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-     #4
-   - name: Remove registry SNMP Community Lexmark_Port_4
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_4
-       name: SNMP Community
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-   - name: Remove registry Hostname IP Lexmark_Port_4
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_4
-       name: Hostname
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-     #5
-   - name: Remove registry SNMP Community Lexmark_Port_5
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_5
-       name: SNMP Community
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-   - name: Remove registry Hostname IP Lexmark_Port_5
-     win_regedit:
-       path: HKLM:\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\Lexmark_Port_5
-       name: Hostname
-       state: absent
-       delete_key: true
-     when: ACTION == "TestD"
-
-
-
-   - name: What is my inventory name
-     debug:
-       msg: 'Hola mundo: {{ testDagoVar }}'
-     when: ACTION == "Print"
-#     debug: var={{ inventory_hostname }}   

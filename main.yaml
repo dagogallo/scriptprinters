@@ -1,0 +1,13 @@
+---
+- name: Configuración principal
+  hosts: windows
+  gather_facts: false
+  tasks:
+    - name: Ejecutar playbook sec.yaml con Printer como parámetro
+      include_vars:
+        file: "{{ playbook_dir }}/sec.yaml"
+        name: sec_vars
+      with_items: "{{ groups['windows'] }}"
+      loop_control:
+        loop_var: windows_host
+      when: windows_host == inventory_hostname

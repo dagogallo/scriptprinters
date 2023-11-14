@@ -1,0 +1,8 @@
+---
+- name: Configuración secundaria
+  hosts: win_server
+  gather_facts: false
+  tasks:
+    - name: Mostrar valor de Printer en sec.yaml
+      debug:
+        msg: "Valor de Printer en {{ inventory_hostname }}: {{ sec_vars.Printer }}"
